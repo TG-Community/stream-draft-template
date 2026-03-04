@@ -45,10 +45,6 @@ TODO Introduction
 
 This document has no direct security considerations.
 
-# WHATWG Considerations
-
-This document has no direct WHATWG considerations.
-
 --- back
 
 # Acknowledgments
