@@ -2,7 +2,7 @@
 title: "TODO - Your title"
 abbrev: "TODO - Abbreviation"
 
-docname: draft-todo-author-stream-latest
+docname: draft-todo-author-stream
 date:
 consensus: false
 keyword:
