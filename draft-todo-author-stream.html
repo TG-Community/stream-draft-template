@@ -3,67 +3,275 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>draft-todo-author-stream</title>
+  <title>TODO - Your title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 40px; line-height: 1.6; }
-    pre { white-space: pre-wrap; word-break: break-word; }
+    :root {
+      color-scheme: light;
+      --page-bg: #ffffff;
+      --ink: #2c2c2c;
+      --muted: #666666;
+      --rule: #e6e6e6;
+      --accent: #4b79aa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--ink);
+      font-family: "Mozilla Headline", sans-serif;
+      line-height: 1.42;
+    }
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 48px 36px 64px;
+    }
+    .page-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 74ch) minmax(240px, 300px);
+      gap: 56px;
+      align-items: start;
+    }
+    .doc {
+      min-width: 0;
+      font-size: 16px;
+    }
+    .doc-header {
+      margin-bottom: 1.8rem;
+    }
+    .doc-meta {
+      margin: 0 0 1.9rem;
+      font-size: 0.92rem;
+      font-family: "Mozilla Headline", sans-serif;
+    }
+    .doc-meta-row {
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 12px;
+    }
+    .doc-meta-row + .doc-meta-row {
+      margin-top: 0.18rem;
+    }
+    .doc-meta dt,
+    .doc-meta dd {
+      margin: 0;
+    }
+    .doc-meta dt {
+      text-align: right;
+      color: var(--muted);
+    }
+    h1, h2, h3, h4 {
+      margin: 0 0 0.75rem;
+      line-height: 1.3;
+      color: var(--ink);
+      font-weight: 700;
+      font-family: "Mozilla Headline", sans-serif;
+    }
+    .doc-title {
+      font-size: 1.15rem;
+      margin-bottom: 0.3rem;
+    }
+    .doc-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    h2 {
+      margin-top: 1.7rem;
+      font-size: 1rem;
+    }
+    h3 {
+      margin-top: 1.35rem;
+      font-size: 1rem;
+    }
+    h4 {
+      margin-top: 1.1rem;
+      font-size: 1rem;
+    }
+    p, ul, address {
+      margin: 0 0 1em;
+      font-size: 1rem;
+    }
+    ul {
+      padding-left: 1.25rem;
+    }
+    li + li {
+      margin-top: 0.25em;
+    }
+    .toc-panel {
+      position: sticky;
+      top: 32px;
+      font-size: 0.92rem;
+    }
+    .toc-title {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      font-family: "Mozilla Headline", sans-serif;
+    }
+    .toc-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-family: "Mozilla Headline", sans-serif;
+    }
+    .toc-item {
+      margin: 0;
+      padding: 0;
+    }
+    .toc-item + .toc-item {
+      margin-top: 0.35rem;
+    }
+    .toc-level-2 {
+      padding-left: 1rem;
+    }
+    .toc-level-3 {
+      padding-left: 2rem;
+    }
+    .toc-level-4 {
+      padding-left: 3rem;
+    }
+    .stamp {
+      margin-top: 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    section:first-of-type h2 {
+      margin-top: 0;
+    }
+    .boilerplate {
+      margin-bottom: 1.8rem;
+    }
+    address {
+      font-style: normal;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .abstract,
+    .middle,
+    .back {
+      margin-top: 1.35rem;
+    }
+    .ref-list {
+      margin: 0 0 1.2rem;
+    }
+    .ref-entry {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+    }
+    .ref-entry + .ref-entry {
+      margin-top: 0.75rem;
+    }
+    .ref-label {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .ref-text {
+      min-width: 0;
+    }
+    .author-address + .author-address {
+      margin-top: 1rem;
+    }
+    @media (max-width: 700px) {
+      main {
+        padding: 28px 16px 40px;
+      }
+      .page-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .toc-panel {
+        position: static;
+        order: -1;
+      }
+      .doc-meta-row {
+        grid-template-columns: 108px minmax(0, 1fr);
+      }
+      .doc-meta dt {
+        text-align: left;
+      }
+      .ref-entry {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>draft-todo-author-stream</h1>
-  <p>Generated at 2026-03-04T09:13:38.612Z</p>
-  <pre>---
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-
-docname: draft-todo-author-stream-latest
-date:
-consensus: false
-keyword:
-  - mx
-  - stream
-  - draft
-author:
-  -
-    fullname: Your Name
-    organization: Your Organization
-    email: your.email@example.com
-normative:
-  MX-0001:
-  RFC2119:
-  RFC8174:
-informative:
-  Example-Spec:
-    title: "Example Supporting Specification"
-    author:
-      -
-        organization: Example Working Group
-    date: 2026-01
-    target: https://example.org/spec
-
---- abstract
-
-TODO Abstract
-
---- middle
-
-# Introduction
-
-TODO Introduction
-
-# Conventions and Definitions
-
-{::boilerplate mx-0001}
-
-# Security Considerations
-
-This document has no direct security considerations.
-
---- back
-
-# Acknowledgments
-
-TODO acknowledge.
-</pre>
+  <main>
+    <div class="page-layout">
+      <article class="doc">
+        <header class="doc-header">
+  <dl class="doc-meta">
+    <div class="doc-meta-row"><dt>Stream Draft:</dt><dd>draft-todo-author-stream-latest</dd></div>
+    <div class="doc-meta-row"><dt>Published:</dt><dd>consensus: false</dd></div>
+    <div class="doc-meta-row"><dt>Author:</dt><dd>Y. Name</dd></div>
+    <div class="doc-meta-row"><dt>Organization:</dt><dd>Your Organization</dd></div>
+  </dl>
+  <h1 class="doc-title">TODO - Your title</h1>
+  <p class="doc-subtitle">TODO - Abbreviation</p>
+</header>
+        <section class="boilerplate">
+  <h2>Status of This Memo</h2>
+  <p>This page is a rendered build of the current The Gathering draft source. Final publication status and normative effect are determined by The Gathering process.</p>
+  <h2>Copyright Notice</h2>
+  <p>Copyright (c) cons The Gathering and the persons identified as the document authors. All rights reserved.</p>
+  <p>This rendered output is subject to The Gathering legal and policy terms in effect on the date of publication: <a href="https://gathering.foundation/privacy-and-policies" target="_blank" rel="noreferrer">https://gathering.foundation/privacy-and-policies</a></p>
+</section>
+        <section class="abstract">
+<h2>Abstract</h2>
+<p>TODO Abstract</p>
+</section>
+<section class="middle">
+<h2 id="1-introduction">1. Introduction</h2>
+<p>TODO Introduction.</p>
+<h2 id="2-conventions-and-definitions">2. Conventions and Definitions</h2>
+<p>TODO Conventions and Definitions.</p>
+<h2 id="3-main-body">3. Main Body</h2>
+<p>TODO Main Body.</p>
+<h2 id="4-security-considerations">4. Security Considerations</h2>
+<p>This document has no direct security considerations.</p>
+</section>
+<section class="back">
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>TODO acknowledge.</p>
+</section>
+<section class="generated-references">
+  <h2 id="5-references">5. References</h2>
+  <h3 id="51-normative-references">5.1. Normative References</h3>
+  <p>This document has no normative references.</p>
+  <h3 id="52-informative-references">5.2. Informative References</h3>
+  <div class="ref-list">
+  <div class="ref-entry"><div class="ref-label">[Example-Spec]</div><div class="ref-text">Example Working Group, Example Supporting Specification, 2026-01, <a href="https://example.org/spec" target="_blank" rel="noreferrer">https://example.org/spec</a></div></div>
+</div>
+</section>
+<section class="generated-authors">
+  <h2 id="authors-address">Author&apos;s Address</h2>
+  <address class="author-address">Your Name<br>Your Organization<br>Email: your.email@example.com</address>
+</section>
+        <p class="stamp">Rendered from draft-todo-author-stream.md at 2026-03-04T09:42:27.215Z</p>
+      </article>
+      <aside class="toc-panel">
+  <h2 class="toc-title">Table of Contents</h2>
+  <ol class="toc-list">
+    <li class="toc-item toc-level-1"><a href="#1-introduction">1. Introduction</a></li>
+    <li class="toc-item toc-level-1"><a href="#2-conventions-and-definitions">2. Conventions and Definitions</a></li>
+    <li class="toc-item toc-level-1"><a href="#3-main-body">3. Main Body</a></li>
+    <li class="toc-item toc-level-1"><a href="#4-security-considerations">4. Security Considerations</a></li>
+    <li class="toc-item toc-level-1"><a href="#5-references">5. References</a></li>
+    <li class="toc-item toc-level-2"><a href="#51-normative-references">5.1. Normative References</a></li>
+    <li class="toc-item toc-level-2"><a href="#52-informative-references">5.2. Informative References</a></li>
+    <li class="toc-item toc-level-1"><a href="#authors-address">Author's Address</a></li>
+    <li class="toc-item toc-level-1"><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</aside>
+    </div>
+  </main>
 </body>
 </html>

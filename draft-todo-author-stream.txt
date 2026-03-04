@@ -16,8 +16,6 @@ author:
     email: your.email@example.com
 normative:
   MX-0001:
-  RFC2119:
-  RFC8174:
 informative:
   Example-Spec:
     title: "Example Supporting Specification"
@@ -35,11 +33,15 @@ TODO Abstract
 
 # Introduction
 
-TODO Introduction
+TODO Introduction.
 
 # Conventions and Definitions
 
-{::boilerplate mx-0001}
+TODO Conventions and Definitions.
+
+# Main Body
+
+TODO Main Body.
 
 # Security Considerations
 
