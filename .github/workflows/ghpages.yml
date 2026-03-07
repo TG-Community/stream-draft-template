@@ -1,0 +1,67 @@
+name: "Publish Editor's Copy to GitHub Pages"
+
+on:
+  push:
+    paths-ignore:
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - .gitignore
+  pull_request:
+    paths-ignore:
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - .gitignore
+
+jobs:
+  pre:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Detect active draft file
+        id: check
+        run: |
+          if ls draft-* 2>/dev/null | grep -qv '^draft-todo-author-stream.md$'; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: pre
+    if: ${{ needs.pre.outputs.should_run == 'true' }}
+    name: "Publish Editor's Copy to GitHub Pages"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build editor's copy
+        run: npm run build
+
+      - name: Publish to gh-pages branch
+        if: ${{ github.event_name == 'push' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: false
+          enable_jekyll: false

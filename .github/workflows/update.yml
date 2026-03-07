@@ -1,0 +1,80 @@
+name: "Update Editor's Copy"
+
+on:
+  push:
+    paths-ignore:
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - .gitignore
+  pull_request:
+    paths-ignore:
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - .gitignore
+
+jobs:
+  pre:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Detect active draft file
+        id: check
+        run: |
+          if ls draft-* 2>/dev/null | grep -qv '^draft-todo-author-stream.md$'; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: pre
+    if: ${{ needs.pre.outputs.should_run == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate repository README
+        run: npm run update-readme
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Build editor's copy
+        run: npm run build
+
+      - name: Commit README updates
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          if [ -n "$(git status --porcelain README.md)" ]; then
+            git add README.md
+            git commit -m "Update repository README"
+            git push
+          fi
+
+      - name: Upload built drafts
+        uses: actions/upload-artifact@v4
+        with:
+          name: drafts
+          path: |
+            dist/*.html
+            dist/*.txt

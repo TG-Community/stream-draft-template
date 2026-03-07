@@ -1,0 +1,13 @@
+{
+  "name": "stream-draft-template",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Template repository for The Gathering Stream draft publication workflow.",
+  "scripts": {
+    "build": "node scripts/build-draft.mjs",
+    "release": "node scripts/release-draft.mjs",
+    "archive": "node scripts/archive-meta.mjs",
+    "sync": "node scripts/sync-draft.mjs",
+    "update-readme": "node scripts/generate-readme.mjs"
+  }
+}
