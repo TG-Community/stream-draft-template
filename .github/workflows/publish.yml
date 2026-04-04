@@ -1,0 +1,81 @@
+name: "Publish New Draft Version"
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release_number:
+        description: "Two-digit release number"
+        default: "00"
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Resolve release data
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG_NAME='${{ github.event.release.tag_name }}'
+          else
+            TAG_NAME="stream-draft-manual-${{ inputs.release_number }}"
+          fi
+          RELEASE_NUMBER="$(printf '%s' "$TAG_NAME" | sed -nE 's/.*-([0-9][0-9])$/\1/p')"
+          if [ -z "$RELEASE_NUMBER" ]; then
+            RELEASE_NUMBER="00"
+          fi
+          echo "tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "number=$RELEASE_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Build draft artifacts
+        run: npm run build
+
+      - name: Publish editor's copy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: false
+          enable_jekyll: false
+
+      - name: Create versioned release artifacts
+        run: npm run release
+        env:
+          RELEASE_NUMBER: ${{ steps.release.outputs.number }}
+
+      - name: Sync published draft to Stream
+        run: npm run sync
+        env:
+          STREAM_GITHUB_ACTOR: ${{ github.actor }}
+          STREAM_RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          STREAM_RELEASE_NUMBER: ${{ steps.release.outputs.number }}
+          STREAM_SOURCE_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}
+          STREAM_HTML_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          STREAM_DRAFT_STATUS: Draft
+
+      - name: Archive published draft artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: published
+          path: versioned/*
